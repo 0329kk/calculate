@@ -13,6 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 public class Main {
 
+    /** 
+     * @param args 実行構成引数から受け取り
+     * */
     public static void main(String[] args) {
 	
 	if (args.length < 1) {
