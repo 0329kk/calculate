@@ -45,7 +45,7 @@ public class Main {
             System.out.println("6: 終了");
 
             int choice = scanner.nextInt();
-            scanner.nextLine();  // consume newline
+            scanner.nextLine();
 
             if (choice == 1) {
                 System.out.println("商品名:");
