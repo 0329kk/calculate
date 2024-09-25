@@ -68,12 +68,22 @@ public class Main {
                 LocalDate date = LocalDate.parse(scanner.next());
 
                 SalesRecord record = new SalesRecord(productName, quantity, price, date);
-                // 売上データをリストに追加
+                // データベースにデータを保存
                 manager.addSalesRecord(record);
                 
                 // データベースに追加
                 String sqlFilePath = "src/main/resources/sql/add.sql";  // SQLファイルのパス
                 manager.executeSQLFromFile(sqlFilePath, record);
+                
+                //テキストファイルにデータを保存
+                try {
+                    Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
+                    Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
+                    System.out.println("テキストファイルへデータの保存をしました。");
+                    manager.saveSalesRecordsToFile(filePath.toString());
+                } catch (IOException e) {
+                    System.out.println("テキストファイルへデータの保存に失敗しました。");
+                }
 
             } else if (choice == 2) {
                 manager.displaySalesRecords();
@@ -89,13 +99,13 @@ public class Main {
 
             } else if (choice == 6) {
                 // 終了前にデータを保存
-                try {
-                    Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
-                    Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
-                    manager.saveSalesRecordsToFile(filePath.toString());
-                } catch (IOException e) {
-                    System.out.println("データの保存に失敗しました。");
-                }
+//                try {
+//                    Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
+//                    Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
+//                    manager.saveSalesRecordsToFile(filePath.toString());
+//                } catch (IOException e) {
+//                    System.out.println("データの保存に失敗しました。");
+//                }
                 break;
             }
         }

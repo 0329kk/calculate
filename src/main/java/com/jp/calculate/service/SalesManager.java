@@ -9,10 +9,13 @@ import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.text.NumberFormat;
 import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Value;
@@ -43,10 +46,23 @@ public class SalesManager implements SalesDataInterface  {
     }
 
     // 売上データを表示
-    @Override
+    // 日付と通貨のフォーマッタを設定
     public void displaySalesRecords() {
+	DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.JAPAN);
+
+        // テーブルのヘッダーを表示
+        System.out.printf("%-10s %-6s %-10s %-12s%n", "商品名", "数量", "単価", "日付");
+        System.out.println("---------------------------------------------");
+
+        // 各レコードを表示
         for (SalesRecord record : salesRecords) {
-            System.out.println(record);
+            System.out.printf("%-10s %-6d %-10s %-12s%n",
+                record.getProductName(),
+                record.getQuantity(),
+                currencyFormatter.format(record.getPrice()),
+                record.getDate().format(dateFormatter)
+            );
         }
     }
 
