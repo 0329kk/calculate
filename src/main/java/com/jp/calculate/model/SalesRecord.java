@@ -1,4 +1,4 @@
-package com.jp.calculate;
+package com.jp.calculate.model;
 
 import java.time.LocalDate;
 

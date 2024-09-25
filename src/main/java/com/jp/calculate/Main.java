@@ -6,37 +6,44 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Scanner;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.RestController;
+
+import com.jp.calculate.model.SalesRecord;
+import com.jp.calculate.service.SalesManager;
 
 @SpringBootApplication
-@RestController
 public class Main {
+    
+    private final SalesManager manager;
 
-    /** 
-     * @param args 実行構成引数から受け取り
-     * */
+    @Autowired
+    public Main(SalesManager manager) {
+        this.manager = manager;
+    }
+    
     public static void main(String[] args) {
-	
-	if (args.length < 1) {
-            System.out.println("使用方法: java Main <ファイル名>");
-            return;
-        }
+        // Spring Bootアプリケーションの起動 (Webインターフェース用)
+        Main app = SpringApplication.run(Main.class, args).getBean(Main.class);
+        
+        // 別スレッドでコンソールベースの処理を実行
+        new Thread(app::runConsoleApp).start();
+    }
 
-        // プロジェクトのルートからの相対パスでファイル名を取得
-        String filename = args[0];
-        SalesManager manager = new SalesManager();
+    public void runConsoleApp() {
         Scanner scanner = new Scanner(System.in);
+
+        System.out.println("使用方法: sales_data.txt ファイルを使用します");
 
         // 初期データのロード
         try {
-            // プロジェクトのルートディレクトリのパスを取得
             Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
-            // sales_data.txt の相対パスを絶対パスに変換
-            Path filePath = projectRootPath.resolve("src").resolve(filename);
+            Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
             manager.loadSalesRecordsFromFile(filePath.toString());
         } catch (IOException e) {
             System.out.println("データのロードに失敗しました: " + e.getMessage());
+            e.printStackTrace();
         }
 
         while (true) {
@@ -61,7 +68,12 @@ public class Main {
                 LocalDate date = LocalDate.parse(scanner.next());
 
                 SalesRecord record = new SalesRecord(productName, quantity, price, date);
+                // 売上データをリストに追加
                 manager.addSalesRecord(record);
+                
+                // データベースに追加
+                String sqlFilePath = "src/main/resources/sql/add.sql";  // SQLファイルのパス
+                manager.executeSQLFromFile(sqlFilePath, record);
 
             } else if (choice == 2) {
                 manager.displaySalesRecords();
@@ -79,7 +91,7 @@ public class Main {
                 // 終了前にデータを保存
                 try {
                     Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
-                    Path filePath = projectRootPath.resolve("src").resolve(filename);
+                    Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
                     manager.saveSalesRecordsToFile(filePath.toString());
                 } catch (IOException e) {
                     System.out.println("データの保存に失敗しました。");
@@ -87,6 +99,181 @@ public class Main {
                 break;
             }
         }
-        scanner.close();
+//        scanner.close();
     }
 }
+
+//@SpringBootApplication
+//@RestController
+//public class Main {
+//    
+//    private final  SalesManager manager;
+//
+//    @Autowired
+//    public Main(SalesManager manager) {
+//        this.manager = manager;
+//    }
+//    
+//    public static void main(String[] args) {
+//        // Spring Bootアプリケーションの起動 (Webインターフェース用)
+//        SpringApplication.run(Main.class, args);
+//        
+//        // 別スレッドでコンソールベースの処理を実行
+//        new Thread(() -> {
+//            new Main(SpringApplication.run(Main.class).getBean(SalesManager.class)).runConsoleApp();
+//        }).start();
+////        new Thread(Main::runConsoleApp).start();
+//    }
+//
+//    public void runConsoleApp() {
+//        Scanner scanner = new Scanner(System.in);
+////        SalesManager manager = new SalesManager();
+//
+//        System.out.println("使用方法: sales_data.txt ファイルを使用します");
+//
+//        // 初期データのロード
+//        try {
+//            Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
+//            Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
+//            manager.loadSalesRecordsFromFile(filePath.toString());
+//        } catch (IOException e) {
+//            System.out.println("データのロードに失敗しました: " + e.getMessage());
+//            e.printStackTrace();
+//        }
+//
+//        while (true) {
+//            System.out.println("1: 売上データの追加");
+//            System.out.println("2: 売上データの表示");
+//            System.out.println("3: 日別売上集計");
+//            System.out.println("4: 商品別売上集計");
+//            System.out.println("5: 全期間売上合計");
+//            System.out.println("6: 終了");
+//
+//            int choice = scanner.nextInt();
+//            scanner.nextLine();
+//
+//            if (choice == 1) {
+//                System.out.println("商品名:");
+//                String productName = scanner.nextLine();
+//                System.out.println("数量:");
+//                int quantity = scanner.nextInt();
+//                System.out.println("単価:");
+//                double price = scanner.nextDouble();
+//                System.out.println("日付 (YYYY-MM-DD):");
+//                LocalDate date = LocalDate.parse(scanner.next());
+//
+//                SalesRecord record = new SalesRecord(productName, quantity, price, date);
+//                // 売上データをリストに追加
+//                manager.addSalesRecord(record);
+//                
+//                // データベースに追加
+//                String sqlFilePath = "src/main/resources/sql/add.sql";  // SQLファイルのパス
+//                manager.executeSQLFromFile(sqlFilePath, record);
+//
+//            } else if (choice == 2) {
+//                manager.displaySalesRecords();
+//
+//            } else if (choice == 3) {
+//                System.out.println(manager.calculateDailySales());
+//
+//            } else if (choice == 4) {
+//                System.out.println(manager.calculateProductSales());
+//
+//            } else if (choice == 5) {
+//                System.out.println(manager.calculateTotalSales());
+//
+//            } else if (choice == 6) {
+//                // 終了前にデータを保存
+//                try {
+//                    Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
+//                    Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
+//                    manager.saveSalesRecordsToFile(filePath.toString());
+//                } catch (IOException e) {
+//                    System.out.println("データの保存に失敗しました。");
+//                }
+//                break;
+//            }
+//        }
+//        scanner.close();
+//    }
+//}
+
+//public class Main {
+//
+//    /** 
+//     * @param args 実行構成引数から受け取り
+//     * */
+//    public static void main(String[] args) {
+//	
+//	if (args.length < 1) {
+//            System.out.println("使用方法: java Main <ファイル名>");
+//            return;
+//        }
+//
+//        // プロジェクトのルートからの相対パスでファイル名を取得
+//        String filename = args[0];
+//        SalesManager manager = new SalesManager();
+//        Scanner scanner = new Scanner(System.in);
+//
+//        // 初期データのロード
+//        try {
+//            // プロジェクトのルートディレクトリのパスを取得
+//            Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
+//            // sales_data.txt の相対パスを絶対パスに変換
+//            Path filePath = projectRootPath.resolve("src").resolve(filename);
+//            manager.loadSalesRecordsFromFile(filePath.toString());
+//        } catch (IOException e) {
+//            System.out.println("データのロードに失敗しました: " + e.getMessage());
+//        }
+//
+//        while (true) {
+//            System.out.println("1: 売上データの追加");
+//            System.out.println("2: 売上データの表示");
+//            System.out.println("3: 日別売上集計");
+//            System.out.println("4: 商品別売上集計");
+//            System.out.println("5: 全期間売上合計");
+//            System.out.println("6: 終了");
+//
+//            int choice = scanner.nextInt();
+//            scanner.nextLine();
+//
+//            if (choice == 1) {
+//                System.out.println("商品名:");
+//                String productName = scanner.nextLine();
+//                System.out.println("数量:");
+//                int quantity = scanner.nextInt();
+//                System.out.println("単価:");
+//                double price = scanner.nextDouble();
+//                System.out.println("日付 (YYYY-MM-DD):");
+//                LocalDate date = LocalDate.parse(scanner.next());
+//
+//                SalesRecord record = new SalesRecord(productName, quantity, price, date);
+//                manager.addSalesRecord(record);
+//
+//            } else if (choice == 2) {
+//                manager.displaySalesRecords();
+//
+//            } else if (choice == 3) {
+//                System.out.println(manager.calculateDailySales());
+//
+//            } else if (choice == 4) {
+//                System.out.println(manager.calculateProductSales());
+//
+//            } else if (choice == 5) {
+//                System.out.println(manager.calculateTotalSales());
+//
+//            } else if (choice == 6) {
+//                // 終了前にデータを保存
+//                try {
+//                    Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
+//                    Path filePath = projectRootPath.resolve("src").resolve(filename);
+//                    manager.saveSalesRecordsToFile(filePath.toString());
+//                } catch (IOException e) {
+//                    System.out.println("データの保存に失敗しました。");
+//                }
+//                break;
+//            }
+//        }
+//        scanner.close();
+//    }
+//}

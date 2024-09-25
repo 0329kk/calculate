@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>売上データ一覧</title>
+</head>
+<body>
+    <h1>売上データ一覧</h1>
+    <table border="1">
+        <tr>
+            <th>商品名</th>
+            <th>数量</th>
+            <th>単価</th>
+            <th>日付</th>
+        </tr>
+        <tr th:each="record : ${salesRecords}">
+            <td th:text="${record.productName}"></td>
+            <td th:text="${record.quantity}"></td>
+            <td th:text="${record.price}"></td>
+            <td th:text="${record.date}"></td>
+        </tr>
+    </table>
+</body>
+</html>
