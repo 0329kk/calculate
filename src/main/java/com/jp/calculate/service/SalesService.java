@@ -20,4 +20,9 @@ public class SalesService {
     public List<SalesRecord> getAllSalesRecords() {
         return salesRecordRepository.findAll();
     }
+
+    public SalesRecord saveSalesRecord(SalesRecord record) {
+	// TODO 自動生成されたメソッド・スタブ
+	return salesRecordRepository.save(record);
+    }
 }

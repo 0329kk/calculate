@@ -3,9 +3,38 @@
 <head>
     <meta charset="UTF-8">
     <title>売上データ一覧</title>
+    <style>
+        form {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 5px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+        }
+    </style>
 </head>
 <body>
     <h1>売上データ一覧</h1>
+    <!-- 売上データ追加フォーム -->
+    <h2>売上データの追加</h2>
+    <form th:action="@{/sales/add}" method="post">
+        <label>商品名: <input type="text" name="productName" /></label><br/>
+        <label>数量: <input type="number" name="quantity" /></label><br/>
+        <label>単価: <input type="number" step="1" name="price" /></label><br/>
+        <label>日付: <input type="date" name="date" /></label><br/>
+        <input type="submit" value="追加" />
+    </form>
+    <form th:action="@{/sales/saveToFile}" method="get">
+        <button type="submit">データをテキストファイルに保存</button>
+    </form>
     <table border="1">
         <tr>
             <th>商品名</th>

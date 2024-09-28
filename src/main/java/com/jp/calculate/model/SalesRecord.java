@@ -9,6 +9,8 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import org.springframework.format.annotation.DateTimeFormat;
+
 @Entity
 @Table(name = "sales_records")
 public class SalesRecord {
@@ -21,6 +23,7 @@ public class SalesRecord {
     private String productName;
     private int quantity;
     private double price;
+    @DateTimeFormat(pattern = "yyyy-MM-dd")
     private LocalDate date;
 
     // デフォルトコンストラクタ（JPAエンティティには必須）

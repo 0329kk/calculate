@@ -1,8 +1,5 @@
 package com.jp.calculate;
 
-import java.io.IOException;
-import java.nio.file.Path;
-import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.util.Scanner;
 
@@ -12,11 +9,14 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 import com.jp.calculate.model.SalesRecord;
 import com.jp.calculate.service.SalesManager;
+import com.jp.calculate.service.SalesService;
 
 @SpringBootApplication
 public class Main {
     
     private final SalesManager manager;
+    
+    private final SalesService salesService = null;
 
     @Autowired
     public Main(SalesManager manager) {
@@ -34,17 +34,17 @@ public class Main {
     public void runConsoleApp() {
         Scanner scanner = new Scanner(System.in);
 
-        System.out.println("使用方法: sales_data.txt ファイルを使用します");
+//        System.out.println("使用方法: sales_data.txt ファイルを使用します");
 
         // 初期データのロード
-        try {
-            Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
-            Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
-            manager.loadSalesRecordsFromFile(filePath.toString());
-        } catch (IOException e) {
-            System.out.println("データのロードに失敗しました: " + e.getMessage());
-            e.printStackTrace();
-        }
+//        try {
+//            Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
+//            Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
+//            manager.loadSalesRecordsFromFile(filePath.toString());
+//        } catch (IOException e) {
+//            System.out.println("データのロードに失敗しました: " + e.getMessage());
+//            e.printStackTrace();
+//        }
 
         while (true) {
             System.out.println("1: 売上データの追加");
@@ -68,22 +68,24 @@ public class Main {
                 LocalDate date = LocalDate.parse(scanner.next());
 
                 SalesRecord record = new SalesRecord(productName, quantity, price, date);
-                // データベースにデータを保存
-                manager.addSalesRecord(record);
+                
+                salesService.saveSalesRecord(record);
+                
+//                manager.addSalesRecord(record);
                 
                 // データベースに追加
-                String sqlFilePath = "src/main/resources/sql/add.sql";  // SQLファイルのパス
-                manager.executeSQLFromFile(sqlFilePath, record);
+//                String sqlFilePath = "src/main/resources/sql/add.sql";  // SQLファイルのパス
+//                manager.executeSQLFromFile(sqlFilePath, record);
                 
                 //テキストファイルにデータを保存
-                try {
-                    Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
-                    Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
-                    System.out.println("テキストファイルへデータの保存をしました。");
-                    manager.saveSalesRecordsToFile(filePath.toString());
-                } catch (IOException e) {
-                    System.out.println("テキストファイルへデータの保存に失敗しました。");
-                }
+//                try {
+//                    Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
+//                    Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
+//                    System.out.println("テキストファイルへデータの保存をしました。");
+//                    manager.saveSalesRecordsToFile(filePath.toString());
+//                } catch (IOException e) {
+//                    System.out.println("テキストファイルへデータの保存に失敗しました。");
+//                }
 
             } else if (choice == 2) {
                 manager.displaySalesRecords();

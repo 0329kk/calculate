@@ -3,11 +3,8 @@ package com.jp.calculate;
 import java.time.LocalDate;
 import java.util.Map;
 
-import com.jp.calculate.model.SalesRecord;
-
 public interface SalesDataInterface {
     
-    void addSalesRecord(SalesRecord record);
     void displaySalesRecords();
     double calculateTotalSales();
     Map<LocalDate, Double> calculateDailySales();
