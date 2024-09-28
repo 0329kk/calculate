@@ -34,18 +34,6 @@ public class Main {
     public void runConsoleApp() {
         Scanner scanner = new Scanner(System.in);
 
-//        System.out.println("使用方法: sales_data.txt ファイルを使用します");
-
-        // 初期データのロード
-//        try {
-//            Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
-//            Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
-//            manager.loadSalesRecordsFromFile(filePath.toString());
-//        } catch (IOException e) {
-//            System.out.println("データのロードに失敗しました: " + e.getMessage());
-//            e.printStackTrace();
-//        }
-
         while (true) {
             System.out.println("1: 売上データの追加");
             System.out.println("2: 売上データの表示");
@@ -70,22 +58,6 @@ public class Main {
                 SalesRecord record = new SalesRecord(productName, quantity, price, date);
                 
                 salesService.saveSalesRecord(record);
-                
-//                manager.addSalesRecord(record);
-                
-                // データベースに追加
-//                String sqlFilePath = "src/main/resources/sql/add.sql";  // SQLファイルのパス
-//                manager.executeSQLFromFile(sqlFilePath, record);
-                
-                //テキストファイルにデータを保存
-//                try {
-//                    Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
-//                    Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
-//                    System.out.println("テキストファイルへデータの保存をしました。");
-//                    manager.saveSalesRecordsToFile(filePath.toString());
-//                } catch (IOException e) {
-//                    System.out.println("テキストファイルへデータの保存に失敗しました。");
-//                }
 
             } else if (choice == 2) {
                 manager.displaySalesRecords();
@@ -100,14 +72,7 @@ public class Main {
                 System.out.println(manager.calculateTotalSales());
 
             } else if (choice == 6) {
-                // 終了前にデータを保存
-//                try {
-//                    Path projectRootPath = Paths.get("").toAbsolutePath().normalize();
-//                    Path filePath = projectRootPath.resolve("src").resolve("sales_data.txt");
-//                    manager.saveSalesRecordsToFile(filePath.toString());
-//                } catch (IOException e) {
-//                    System.out.println("データの保存に失敗しました。");
-//                }
+        	System.out.println("コンソール機能を終了しました。");
                 break;
             }
         }
