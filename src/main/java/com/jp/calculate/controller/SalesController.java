@@ -3,7 +3,12 @@ package com.jp.calculate.controller;
 import java.io.IOException;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.text.NumberFormat;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 import javax.validation.Valid;
 
@@ -33,7 +38,22 @@ public class SalesController {
 
     @GetMapping("/sales/view")
     public String viewSalesRecords(Model model) {
+	// 日付と単価をフォーマット
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.JAPAN);
         List<SalesRecord> salesRecords = salesService.getAllSalesRecords();
+        for (SalesRecord record : salesRecords) {
+            // 日付のフォーマット
+            record.setFormattedDate(record.getDate().format(dateFormatter));
+            // 単価のフォーマット
+            record.setFormattedPrice(currencyFormatter.format(record.getPrice()));
+        }
+        // 商品ごとの売上を計算してグラフ用のデータを準備
+        Map<String, Double> productSales = salesService.calculateProductSales();
+        List<String> productNames = new ArrayList<>(productSales.keySet());
+        List<Double> salesAmounts = new ArrayList<>(productSales.values());
+        model.addAttribute("productNames", productNames);
+        model.addAttribute("salesAmounts", salesAmounts);
         model.addAttribute("salesRecords", salesRecords);
         return "sales";
     }

@@ -104,5 +104,25 @@ public class SalesManager implements SalesDataInterface  {
             }
         }
     }
+    
+    //日別売り上げデータ整形 コンソール表示用
+    public String formatDailySales(Map<LocalDate, Double> dailySales) {
+	    DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("yyyy年MM月dd日");
+	    NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(Locale.JAPAN);
+	    
+	    StringBuilder formattedSales = new StringBuilder();
+	    formattedSales.append(String.format("%-12s %-12s%n", "日付", "売上合計"));
+	    formattedSales.append("-----------------------------------\n");
+
+	    for (Map.Entry<LocalDate, Double> entry : dailySales.entrySet()) {
+	        formattedSales.append(String.format("%-12s %-12s%n",
+	            entry.getKey().format(dateFormatter), 
+	            currencyFormatter.format(entry.getValue())
+	        ));
+	    }
+
+	    formattedSales.append("-----------------------------------\n");
+	    return formattedSales.toString();
+	}
 
 }

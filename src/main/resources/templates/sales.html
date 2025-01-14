@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <title>売上データ一覧</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         form {
             margin-bottom: 20px;
@@ -45,9 +46,49 @@
         <tr th:each="record : ${salesRecords}">
             <td th:text="${record.productName}"></td>
             <td th:text="${record.quantity}"></td>
-            <td th:text="${record.price}"></td>
-            <td th:text="${record.date}"></td>
+            <td th:text="${record.formattedPrice}"></td>
+            <td th:text="${record.formattedDate}"></td>
         </tr>
     </table>
+    <canvas id="salesChart" width="400" height="200"></canvas>
+    <script th:inline="javascript">
+        // ThymeleafからデータをJSON形式で受け取る
+        var productNames = /*[[${productNames}]]*/ '[]';
+        var salesAmounts = /*[[${salesAmounts}]]*/ '[]';
+
+        // 売上金額の最大値を取得し、Y軸の最大値を設定
+        var maxAmount = Math.max(...salesAmounts) || 0;
+        var yAxisMax = maxAmount > 500 ? maxAmount + 500 : 1000; // 最小で1000円まで表示
+
+        // Chart.js の設定
+        var ctx = document.getElementById('salesChart').getContext('2d');
+        var salesChart = new Chart(ctx, {
+            type: 'bar',  // 棒グラフに設定
+            data: {
+                labels: productNames,  // 商品名をラベルに設定
+                datasets: [{
+                    label: '売上額 (円)',
+                    data: salesAmounts,  // 売上額をデータに設定
+                    backgroundColor: 'rgba(75, 192, 192, 0.2)',
+                    borderColor: 'rgba(75, 192, 192, 1)',
+                    borderWidth: 1
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        max: yAxisMax, // Y軸の最大値を設定
+                        ticks: {
+                            stepSize: 500,  // ステップサイズを500円に設定
+                            callback: function(value, index, values) {
+                                return '¥' + value;  // Y軸に円マークをつける
+                            }
+                        }
+                    }
+                }
+            }
+        });
+    </script>
 </body>
 </html>

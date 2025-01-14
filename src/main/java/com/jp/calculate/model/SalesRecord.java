@@ -15,6 +15,9 @@ import org.springframework.format.annotation.DateTimeFormat;
 @Table(name = "sales_records")
 public class SalesRecord {
     
+    private String formattedDate;
+    private String formattedPrice;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
@@ -87,6 +90,22 @@ public class SalesRecord {
                 ", price=" + price +
                 ", date=" + date +
                 '}';
+    }
+
+    public String getFormattedDate() {
+        return formattedDate;
+    }
+
+    public void setFormattedDate(String formattedDate) {
+        this.formattedDate = formattedDate;
+    }
+
+    public String getFormattedPrice() {
+        return formattedPrice;
+    }
+
+    public void setFormattedPrice(String formattedPrice) {
+        this.formattedPrice = formattedPrice;
     }
 
 }
