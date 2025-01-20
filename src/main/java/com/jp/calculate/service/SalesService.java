@@ -16,27 +16,36 @@ public class SalesService {
 
     @Autowired
     public SalesService(SalesRecordRepository salesRecordRepository) {
-        this.salesRecordRepository = salesRecordRepository;
+	this.salesRecordRepository = salesRecordRepository;
     }
 
     public List<SalesRecord> getAllSalesRecords() {
-        return salesRecordRepository.findAll();
+	return salesRecordRepository.findAll();
     }
 
     public SalesRecord saveSalesRecord(SalesRecord record) {
 	// TODO 自動生成されたメソッド・スタブ
 	return salesRecordRepository.save(record);
     }
-    
+
     public Map<String, Double> calculateProductSales() {
-	    List<SalesRecord> salesRecords = salesRecordRepository.findAll();
-	    Map<String, Double> productSales = new HashMap<>();
+	List<SalesRecord> salesRecords = salesRecordRepository.findAll();
+	Map<String, Double> productSales = new HashMap<>();
 
-	    for (SalesRecord record : salesRecords) {
-	        productSales.put(record.getProductName(), 
-	            productSales.getOrDefault(record.getProductName(), 0.0) + record.getPrice() * record.getQuantity());
-	    }
-
-	    return productSales;
+	for (SalesRecord record : salesRecords) {
+	    productSales.put(record.getProductName(),
+		    productSales.getOrDefault(record.getProductName(), 0.0) + record.getPrice() * record.getQuantity());
 	}
+
+	return productSales;
+    }
+
+    public SalesRecord getSalesRecordById(Integer id) {
+	return salesRecordRepository.findById(id)
+		.orElseThrow(() -> new IllegalArgumentException("Invalid sales record Id:" + id));
+    }
+
+    public void deleteSalesRecord(Integer id) {
+	salesRecordRepository.deleteById(id);
+    }
 }

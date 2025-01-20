@@ -19,6 +19,7 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.jp.calculate.model.SalesRecord;
 import com.jp.calculate.service.SalesManager;
@@ -79,6 +80,32 @@ public class SalesController {
             System.out.println("テキストファイルへの保存に失敗しました: " + e.getMessage());
             e.printStackTrace();
         }
+        return "redirect:/sales/view";
+    }
+    
+ // 編集ページへの遷移
+    @GetMapping("/sales/edit")
+    public String editSalesRecord(@RequestParam("id") Integer id, Model model) {
+        SalesRecord record = salesService.getSalesRecordById(id);
+        model.addAttribute("salesRecord", record);
+        return "edit";
+    }
+
+    // データ更新
+    @PostMapping("/sales/update")
+    public String updateSalesRecord(@Valid @ModelAttribute SalesRecord record, BindingResult result, Model model) {
+        if (result.hasErrors()) {
+            model.addAttribute("salesRecord", record);
+            return "edit";
+        }
+        salesService.saveSalesRecord(record);
+        return "redirect:/sales/view";
+    }
+
+    // データ削除
+    @PostMapping("/sales/delete")
+    public String deleteSalesRecord(@RequestParam("id") Integer id) {
+        salesService.deleteSalesRecord(id);
         return "redirect:/sales/view";
     }
 
